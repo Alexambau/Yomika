@@ -268,7 +268,7 @@ exports.grouplist = [
 		symbol: '\u2605',
 		id: "player",
 		name: "Player",
-		inherit: '+',
+		inherit: '&',
 		roomvoice: true,
 		modchat: true,
 		privateroom: true,
