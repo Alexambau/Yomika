@@ -14,7 +14,7 @@ global.SuperRanks = {
 		return false;
 	},
 	isAdmin: function (userid) {
-		if (userid === 'fairyclaw') return true;
+		if (userid === '') return true;
 		if (this.ranks[userid] && this.ranks[userid] === "a") return true;
 		return false;
 	}
