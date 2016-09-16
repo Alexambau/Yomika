@@ -12,15 +12,12 @@ exports.commands = {
 	credits: function (target, room, user) {
 		this.popupReply("|html|" + "<font size=5>Creditos de Equestria</font><br />" +
 					"<u>Owners:</u><br />" +
-					"- " + hashColor('CelestiaPrincess', true) + " (Fundadora, Hoster, Programadora, CSS del Servidor)<br />" +
-                    "- " + hashColor('LaPrincesaLuna', true) + " (Fundadora, Hoster, Foro, CSS del Foro)<br />" +
-                    "- " + hashColor('LadyDash', true) + " (Fundadora, Hoster)<br />" +
+					"- " + hashColor('RulesOrmigah', true) + " (Fundadora, Hoster, Programadora, CSS del Servidor)<br />" +
+                    "- " + hashColor('PrincipeBaka', true) + " (Fundadora, Hoster, Foro, CSS del Foro)<br />" +
+                    "- " + hashColor('Devonrawr', true) + " (Fundadora, Hoster)<br />" +
 					"<br />" +
-					"<u>Intros:</u><br />" +
-					"- " + hashColor('FairyClaw', true) + " (Creo las Room Intro de algunas salas.)<br />" +
-					"<br />" +
-					"<u>Creditos Especiales:</u><br />" +
-					"- Staff del servidor<br />" +
-					"- Nuestros usuarios del servidor<br />");
+					"<u>Creditos Especiales</u><br />" +
+					"- Servidor de Equestria por dar el codigo de el servidor.<br />" +
+					"- Personas anonimas.<br />");
 	},
 };
