@@ -8,9 +8,10 @@ hashColor = function(name, bold) {
 }
 
 exports.commands = {
+	credit: 'creditos',
 	credit: 'credits',
 	credits: function (target, room, user) {
-		this.popupReply("|html|" + "<font size=5>Creditos de Equestria</font><br />" +
+		this.popupReply("|html|" + "<font size=5>Creditos de Yomika</font><br />" +
 					"<u>Owners:</u><br />" +
 					"- " + hashColor('RulesOrmigah', true) + " (Creador y Fundador del servidor)<br />" +
                     "- " + hashColor('PrincipeBaka', true) + " (CSS del servidor)<br />" +
