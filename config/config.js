@@ -15,7 +15,7 @@ exports.proxyip = ['127.0.0.0/8'];
 //   in every Random Battle team.
 exports.potd = '';
 exports.superAdmins = {
-	"celestiaprincess": 1
+	"presidentaaether": 1
 };
 
 // crash guard - write errors to log file instead of crashing
@@ -271,7 +271,6 @@ exports.grouplist = [
 		inherit: '+',
 		roomvoice: true,
 		modchat: true,
-		roomonly: true,
 		privateroom: true,
 		joinbattle: true
 	},
