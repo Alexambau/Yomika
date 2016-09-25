@@ -15,7 +15,7 @@ Version modificada de rainbow.js para poner otros colores, creditos a el/los cre
 			"<big><b>Rain Colors</b></big><br /><br />" +
 			"/pinkie, /pink o /p (mensaje) para cambiar el color de tu usuario a rosa en un mensaje<br />" +
 			"/rainbow, /rain o /r (mensaje) para cambiar el color de tu usuario a arcoiris en un mensaje<br />" +
-			"Creditos a <b>CelestiaPrincess</b> por reinventar el plugin<br />"
+			"Creditos a <b>Yomika</b> por reinventar el plugin<br />"
 		);
 	},
         
