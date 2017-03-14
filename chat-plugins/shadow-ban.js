@@ -1,3 +1,4 @@
+'use strict'
 const ROOM_NAME = "Calabozo";
 var room = Rooms.get(toId(ROOM_NAME));
 if (!room) {
@@ -162,11 +163,10 @@ exports.commands = {
 		var params = this.splitTarget(target).split(',');
 		var action = params[0].trim().toLowerCase();
 		var reason = params.slice(1).join(',').trim();
-		if (!(action in Chat.commands)) {
+		if (!(action in CommandParser.commands)) {
 			action = 'mute';
 			reason = params.join(',').trim();
 		}
-
 		if (!this.targetUser) return this.sendReply("User '" + this.targetUsername + "' not found.");
 		if (!this.can('lock', this.targetUser)) return;
 		var targets = addUser(this.targetUser);
