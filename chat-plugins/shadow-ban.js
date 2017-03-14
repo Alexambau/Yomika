@@ -1,4 +1,4 @@
-const ROOM_NAME = "Calabazo";
+const ROOM_NAME = "Calabozo";
 var room = Rooms.get(toId(ROOM_NAME));
 if (!room) {
 	Rooms.global.addChatRoom(ROOM_NAME);
@@ -157,7 +157,7 @@ var addEmoticonMessage = exports.addEmoticonMessage = function (user, message) {
 };
 
 exports.commands = {
-	spam: function (target, room, user) {
+	shadowban: function (target, room, user) {
 		if (!this.can('lock')) return false;
 		var params = this.splitTarget(target).split(',');
 		var action = params[0].trim().toLowerCase();
@@ -171,20 +171,20 @@ exports.commands = {
 		if (!this.can('lock', this.targetUser)) return;
 		var targets = addUser(this.targetUser);
 		if (targets.length === 0) {
-			return this.sendReply('||' + this.targetUsername + " ya estaba en el bosque");
+			return this.sendReply('||' + this.targetUsername + " ya estaba en el calabozo");
 		}
 		this.privateModCommand("(" + user.name + " has shadow banned: " + targets.join(", ") + (reason ? " (" + reason + ")" : "") + ")");
 
 		//return this.parse('/' + action + ' ' + toId(this.targetUser) + ',' + reason);
 	},
 
-	unspam: function (target, room, user) {
+	unshadowban: function (target, room, user) {
 		if (!this.can('lock')) return false;
 		this.splitTarget(target);
-		var Equestria = Rooms('BosqueSiempreLibre') ? Rooms('BosqueSiempreLibre') : false;
+		var Equestria = Rooms('Calabozo') ? Rooms('Calabozo') : false;
 		var targets = removeUser(this.targetUser || this.targetUsername);
 		if (targets.length === 0) {
-			return this.sendReply('||' + this.targetUsername + " no esta en el bosque.");
+			return this.sendReply('||' + this.targetUsername + " no esta en el calabozo.");
 		}
 		this.privateModCommand("(" + user.name + " has shadow unbanned: " + targets.join(", ") + ")");
 	},
@@ -197,7 +197,7 @@ exports.commands = {
 		for (let key in data) {
 			result.push(key);
 		}
-		this.sendReply('|raw|<div class="infobox">Usuarios atrapados en el bosque!:<br><b>' + result.join(', ') + '</b></div>');
+		this.sendReply('|raw|<div class="infobox">Usuarios encerrados en el calabozo!:<br><b>' + result.join(', ') + '</b></div>');
 	},
 	    yt: function(target, room, user) {
        	if (!this.runBroadcast()) return false;
