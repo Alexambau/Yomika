@@ -1,4 +1,4 @@
-const ROOM_NAME = "Moon";
+const ROOM_NAME = "Calabazo";
 var room = Rooms.get(toId(ROOM_NAME));
 if (!room) {
 	Rooms.global.addChatRoom(ROOM_NAME);
@@ -6,23 +6,37 @@ if (!room) {
 
 	room.isPrivate = true;
 	room.staffRoom = true;
+	room.staffAutojoin = false;
 	room.addedUsers = {};
 
 	if (room.chatRoomData) {
 		room.chatRoomData.isPrivate = true;
 		room.chatRoomData.staffRoom = true;
+		room.chatRoomData.staffAutojoin = false;
 		room.chatRoomData.addedUsers = room.addedUsers;
 
 		Rooms.global.writeChatRoomData();
 	}
 }
-if (Object.size(room.addedUsers) > 0) {
+if (Object.keys(room.addedUsers) > 0) {
 	setImmediate(function () {
-		room.add("||Cargando lista de usuarios castigados:: " + Object.keys(room.addedUsers).sort().join(", "));
+		room.add("||Añadiendo usuarios al S-B: " + Object.keys(room.addedUsers).sort().join(", "));
 		room.update();
 	});
 }
 exports.room = room;
+
+function getLinkId (msg) {
+	msg = msg.split(' ');
+	for (var i = 0; i < msg.length; i++) {
+		if ((/youtu\.be/i).test(msg[i])) {
+			var temp = msg[i].split('/');
+			return temp[temp.length - 1];
+		} else if ((/youtube\.com/i).test(msg[i])) {
+			return msg[i].substring(msg[i].indexOf("=") + 1).replace(".", "");
+		}
+	}
+}
 
 function getAllAlts(user) {
 	var targets = {};
@@ -88,7 +102,8 @@ var checkBanned = exports.checkBanned = function (user) {
 
 	if (matches.exclusionA.length > 0) {
 		Rooms.global.writeChatRoomData();
-		room.add("||Las Alts de: " + matches.intersection[0] + " han sido automaticamente añadidas: " + matches.exclusionA.join(", "));
+		room.addRaw("Las alts de <b>" + Equ.nameColor(matches.intersection[0]) + "</b> fueron agregadas automaticamente: " + matches.exclusionA.join(", "));
+		room.update();
 	}
 
 	return true;
@@ -108,8 +123,6 @@ var addUser = exports.addUser = function (user) {
 
 	if (targets.length > 0) {
 		Rooms.global.writeChatRoomData();
-		room.add("||Preparando el castigo de: " + targets.join(", "));
-		room.update();
 	}
 
 	return targets;
@@ -128,7 +141,6 @@ var removeUser = exports.removeUser = function (user) {
 
 	if (targets.length > 0) {
 		Rooms.global.writeChatRoomData();
-		room.add("||Quitandole el castigo a: " + targets.join(", "));
 		room.update();
 	}
 
@@ -145,57 +157,90 @@ var addEmoticonMessage = exports.addEmoticonMessage = function (user, message) {
 };
 
 exports.commands = {
-	moonban: 'shadowban',
-	shadowban: function (target, room, user) {
-
-		if (!target) return this.sendReply("/moonban [nick], [razon] - Castiga a un usuario enviandolo a la luna.");
-		if (!target) return this.sendReply("/moonban [nick], [razon] - Castiga a un usuario enviando sus mensajes a la luna.");
-
-
+	spam: function (target, room, user) {
+		if (!this.can('lock')) return false;
 		var params = this.splitTarget(target).split(',');
 		var action = params[0].trim().toLowerCase();
 		var reason = params.slice(1).join(',').trim();
-		if (!(action in CommandParser.commands)) {
+		if (!(action in Chat.commands)) {
 			action = 'mute';
 			reason = params.join(',').trim();
 		}
 
-		if (!this.targetUser) return this.sendReply("El usuario '" + this.targetUsername + "' no fue encontrado.");
+		if (!this.targetUser) return this.sendReply("User '" + this.targetUsername + "' not found.");
 		if (!this.can('lock', this.targetUser)) return;
-
 		var targets = addUser(this.targetUser);
 		if (targets.length === 0) {
-
-			return this.sendReply('||' + this.targetUsername + " ya estaba en la luna.");
-			return this.sendReply('||' + this.targetUsername + " ya estaban sus mensajes en la luna.");
+			return this.sendReply('||' + this.targetUsername + " ya estaba en el bosque");
 		}
-		this.privateModCommand("(" + user.name + " ha enviado a la luna a " + targets.join(", ") + (reason ? " (" + reason + ")" : "") + ")");
+		this.privateModCommand("(" + user.name + " has shadow banned: " + targets.join(", ") + (reason ? " (" + reason + ")" : "") + ")");
 
 		//return this.parse('/' + action + ' ' + toId(this.targetUser) + ',' + reason);
 	},
 
-	unmoonban: 'unshadowban',
-	unshadowban: function (target, room, user) {
-		if (!target) return this.sendReply("/unmoonban [username] - Deshace el castigo de la luna que se le asigno a un usuario.");
+	unspam: function (target, room, user) {
+		if (!this.can('lock')) return false;
 		this.splitTarget(target);
-
-		if (!this.can('lock')) return;
-
+		var Equestria = Rooms('BosqueSiempreLibre') ? Rooms('BosqueSiempreLibre') : false;
 		var targets = removeUser(this.targetUser || this.targetUsername);
 		if (targets.length === 0) {
-			return this.sendReply('||' + this.targetUsername + " no ha sido castigado.");
+			return this.sendReply('||' + this.targetUsername + " no esta en el bosque.");
 		}
-		this.privateModCommand("(" + user.name + " ha librado del castigo a " + targets.join(", ") + ")");
+		this.privateModCommand("(" + user.name + " has shadow unbanned: " + targets.join(", ") + ")");
 	},
 	
-	moonbanlist: 'sbanlist',
-	sbanlist: function (target, room, user) {
-		if (!target && !this.can('lock')) return this.sendReply("The command '/sbanlist' was unrecognized.  To send a message starting with '/sbanlist', type '//sbanlist'.");
-		if ((user.locked || room.isMuted(user)) && !user.can('bypassall')) return this.sendReply("You cannot do this while unable to talk.");
+	spamlist: function (target, room, user) {
 		if (!this.can('lock')) return false;
-		
-		Users.get(toId(user.name)).send('|popup| Here is a list of sbanned users: \n' + JSON.stringify(Rooms.rooms.shadowbanroom.chatRoomData, null, 2));
-	}
+		if ((user.locked || room.isMuted(user)) && !user.can('bypassall')) return this.sendReply("You cannot do this while unable to talk.");
+		let result = [];
+		let data = Rooms(toId(ROOM_NAME)).chatRoomData.addedUsers;
+		for (let key in data) {
+			result.push(key);
+		}
+		this.sendReply('|raw|<div class="infobox">Usuarios atrapados en el bosque!:<br><b>' + result.join(', ') + '</b></div>');
+	},
+	    yt: function(target, room, user) {
+       	if (!this.runBroadcast()) return false;
+       	if (!this.canTalk())
+        if (!target) return false;
+        var params_spl = target.split(' ');
+        var g = '';
+
+        for (var i = 0; i < params_spl.length; i++) {
+            g += '+' + params_spl[i];
+        }
+        g = g.substr(1);
+
+        var reqOpts = {
+            hostname: "www.googleapis.com",
+            method: "GET",
+            path: '/youtube/v3/search?part=snippet&q=' + g + '&type=video&key=AIzaSyA4fgl5OuqrgLE1B7v8IWYr3rdpTGkTmns',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
+
+        var self = this;
+        var data = '';
+        var req = require('https').request(reqOpts, function(res) {
+            res.on('data', function(chunk) {
+                data += chunk;
+            });
+            res.on('end', function(chunk) {
+                var d = JSON.parse(data);
+                if (d.pageInfo.totalResults == 0) {
+                    room.add('No videos found');
+                    room.update();
+                    return false;
+                } 
+        var id = getLinkId(target);
+        const image = '<button style="background: none; border: none;"><img src="https://i.ytimg.com/vi/' + id + '/hqdefault.jpg?custom=true&w=168&h=94&stc=true&jpg444=true&jpgq=90&sp=68&sigh=tbq7TDTjFXD_0RtlFUMGz-k3JiQ" height="180" width="180"></button>';
+              self.sendReplyBox('<center>' + image + '<br><a href="https://www.youtube.com/watch?v=' + d.items[0].id.videoId +'"><b> '+ d.items[0].snippet.title +'</b></center>');
+            	room.update();
+            });
+        });
+        req.end();
+    },
 };
 
 Users.ShadowBan = exports;
